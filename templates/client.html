@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Soundcloud Visualizer by Michael Bromley</title>
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <div id="info">
@@ -46,12 +46,13 @@
 
 <script src="http://connect.soundcloud.com/sdk.js"></script>
 <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+var loadAndUpdate;
 <script type="text/javascript">
     var setupSync = function(audio) {
       var peer = new Peer({key: 'oq5i0km415ze61or'});
       var getDelay = function() {
         return new Promise(function(resolve, reject) {
-          var timehost = peer.connect('time');
+          var timehost = peer.connect('time_{{room}}');
           var sum = 0, n = 0;
           timehost.on('error', err => {
             reject(err);
@@ -76,28 +77,28 @@
           delay = d;
           console.log("updated delay: " + delay);
         }), 5000);
-        var host = peer.connect('host');
+        var host = peer.connect('host_{{room}}');
         host.on('data', msg => {
           if (msg.type == "pause") {
             audio.pause();
           } else if (msg.type == "play") {
             if (audio.src != msg.src) {
-              audio.src = msg.src;
+              loadAndUpdate(msg.src);
               return; // try again later after buffering
             }
             var lag = Math.max(0, (msg.curTime - window.performance.now() -
-                  delay)/-2000);
+                  delay)/2000);
             console.log("measured lag: " + lag)
             console.log("seeking to " + (msg.time + lag));
             audio.currentTime = msg.time + lag;
             audio.play();
           } else if (msg.type == "update") {
             if (audio.src != msg.src) {
-              audio.src = msg.src;
+              loadAndUpdate(msg.src);
               return; // try again later after buffering
             }
             var lag = Math.max(0, (msg.curTime - window.performance.now() -
-                  delay)/-2000);
+                  delay)/2000);
             if (Math.abs(audio.currentTime - (msg.time + lag)) > .04) {
               console.log("updating because behind by: " + 
                   (Math.abs(audio.currentTime - (msg.time + lag))));
@@ -112,6 +113,6 @@
       }, alert);
     }
 </script>
-<script src="js/app.js"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Soundcloud Visualizer by Michael Bromley</title>
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <div id="info">
@@ -48,8 +48,8 @@
 <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 <script type="text/javascript">
     var setupSync = function(audio) {
-      var peer = new Peer('host', {key: 'oq5i0km415ze61or'});
-      var ntp = new Peer('time', {key: 'oq5i0km415ze61or'});
+      var peer = new Peer('host_{{room}}', {key: 'oq5i0km415ze61or'});
+      var ntp = new Peer('time_{{room}}', {key: 'oq5i0km415ze61or'});
       var receivers = [];
       peer.on('error', err => alert(err));
       peer.on('connection', conn => { receivers.push(conn); });
@@ -94,6 +94,6 @@
       }, 30000);
     }
 </script>
-<script src="js/app.js"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
