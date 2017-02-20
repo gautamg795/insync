@@ -43,6 +43,39 @@ var MicrophoneAudioSource = function() {
     }, function(){ alert("error getting microphone input."); });
 };
 
+var FileAudioSource = function(player) {
+    var self = this;
+    var analyser;
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    player.crossOrigin = "anonymous";
+    var source = audioCtx.createMediaElementSource(player);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    var sampleAudioStream = function() {
+        analyser.getByteFrequencyData(self.streamData);
+        // calculate an overall volume value
+        var total = 0;
+        for (var i = 0; i < 80; i++) { // get the volume from the first 80 bins, else it gets too loud with treble
+            total += self.streamData[i];
+        }
+        self.volume = total;
+    };
+    setInterval(sampleAudioStream, 20);
+    // public properties and methods
+    this.volume = 0;
+    this.streamData = new Uint8Array(128);
+    this.playStream = function(streamUrl) {
+        // get the input stream from the audio element
+        player.addEventListener('ended', function(){
+            self.directStream('coasting');
+        });
+        player.setAttribute('src', streamUrl);
+        player.play();
+    }
+}
+
 var SoundCloudAudioSource = function(player) {
     var self = this;
     var analyser;
@@ -433,6 +466,32 @@ var Visualizer = function() {
     };
 };
 
+var FileLoader = function(player, uiUpdater) {
+    var self = this;
+    this.sound = {'kind': 'track', 'permalink_url': '', 'title': 'local track',
+      'artwork_url': 'http://bobjames.com/wp-content/themes/soundcheck/images/default-album-artwork.png',
+      'user': {'permalink_url': '', 'username': 'local'}};
+    this.streamUrl = "";
+    this.errorMessage = "";
+    this.player = player;
+    this.uiUpdater = uiUpdater;
+
+    this.loadStream = function(track_url, successCallback, errorCallback) {
+      self.streamUrl = () => track_url;
+      successCallback();
+    }
+
+    this.directStream = function (direction) {
+        if(direction=='toggle'){
+            if (this.player.paused) {
+                this.player.play();
+            } else {
+                this.player.pause();
+            }
+        }
+    }
+}
+
 /**
  * Makes a request to the Soundcloud API and returns the JSON data.
  */
@@ -596,11 +655,11 @@ window.onload = function init() {
     var visualizer = new Visualizer();
     var player =  document.getElementById('player');
     var uiUpdater = new UiUpdater();
-    var loader = new SoundcloudLoader(player,uiUpdater);
+    var loader = new FileLoader(player,uiUpdater);
 
-    var audioSource = new SoundCloudAudioSource(player);
+    var audioSource = new FileAudioSource(player);
     var form = document.getElementById('form');
-    var loadAndUpdate = function(trackUrl) {
+    loadAndUpdate = function(trackUrl) {
         loader.loadStream(trackUrl,
             function() {
                 uiUpdater.clearInfoPanel();
@@ -612,6 +671,8 @@ window.onload = function init() {
                 uiUpdater.displayMessage("Error", loader.errorMessage);
             });
     };
+
+    setupSync(player);
 
     visualizer.init({
         containerId: 'visualizer',
@@ -645,7 +706,7 @@ window.onload = function init() {
     });
 
     window.addEventListener("keydown", keyControls, false);
-     
+
     function keyControls(e) {
         switch(e.keyCode) {
             case 32:
@@ -660,7 +721,7 @@ window.onload = function init() {
                 // right key pressed
                 loader.directStream('forward');
                 break;
-        }   
+        }
     }
 
 
