@@ -29,10 +29,10 @@
     </div>
     <div id="playerControls">
         <form id="form">
-            <input id="input" placeholder="Paste Soundcloud URL here (https://soundcloud.com/artist/track)">
+            <input id="input" placeholder="Paste MP3 URL here">
             <button type="submit" id="submit"><i class="icon-play"></i></button><br>
         </form>
-        <audio id="player" controls="" autoplay="" preload autobuffer></audio>
+        <audio id="player" preload autobuffer></audio>
     </div>
 </div>
 
@@ -46,6 +46,73 @@
 </footer>
 
 <script src="http://connect.soundcloud.com/sdk.js"></script>
+<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+<script type="text/javascript">
+    var setupSync = function(audio) {
+      var peer = new Peer({key: 'oq5i0km415ze61or'});
+      var getDelay = function() {
+        return new Promise(function(resolve, reject) {
+          var timehost = peer.connect('time');
+          var sum = 0, n = 0;
+          timehost.on('error', err => {
+            reject(err);
+          });
+          timehost.on('open', () => {
+            timehost.send("ready");
+          })
+          timehost.on('data', data => {
+            n++;
+            sum += (data - window.performance.now());
+            if (n == 5) {
+              timehost.close();
+              resolve(sum / n);
+            }
+          });
+          setTimeout(() => reject("Delay calculation timed out"), 5000);
+        });
+      }
+      getDelay().then(delay => {
+        console.log(delay)
+        setInterval(() => getDelay().then(d => {
+          delay = d;
+          console.log("updated delay: " + delay);
+        }), 5000);
+        var host = peer.connect('host');
+        host.on('data', msg => {
+          if (msg.type == "pause") {
+            audio.pause();
+          } else if (msg.type == "play") {
+            if (audio.src != msg.src) {
+              audio.src = msg.src;
+              return; // try again later after buffering
+            }
+            var lag = Math.max(0, (msg.curTime - window.performance.now() -
+                  delay)/-2000);
+            console.log("measured lag: " + lag)
+            console.log("seeking to " + (msg.time + lag));
+            audio.currentTime = msg.time + lag;
+            audio.play();
+          } else if (msg.type == "update") {
+            if (audio.src != msg.src) {
+              audio.src = msg.src;
+              return; // try again later after buffering
+            }
+            var lag = Math.max(0, (msg.curTime - window.performance.now() -
+                  delay)/-2000);
+            if (Math.abs(audio.currentTime - (msg.time + lag)) > .04) {
+              console.log("updating because behind by: " + 
+                  (Math.abs(audio.currentTime - (msg.time + lag))));
+              console.log("measured lag: " + lag)
+              console.log("updating to " + (msg.time + lag + .04));
+              audio.currentTime = msg.time + lag + .04;
+              if (audio.paused) audio.play();
+              console.log("updated");
+            }
+          }
+        });
+      }, alert);
+    }
+</script>
 <script src="js/app.js"></script>
 </body>
 </html>
