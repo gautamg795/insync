@@ -476,9 +476,34 @@ var FileLoader = function(player, uiUpdater) {
     this.player = player;
     this.uiUpdater = uiUpdater;
 
+    this.parseImage = function(image) {
+      if (typeof image === "undefined" || typeof image.data === "undefined") {
+        return 'http://bobjames.com/wp-content/themes/soundcheck/images/default-album-artwork.png';
+      }
+      var base64String = "";
+      for (var i = 0; i < image.data.length; i++) {
+        base64String += String.fromCharCode(image.data[i]);
+      }
+      var base64 = "data:image/jpeg;base64," + window.btoa(base64String);
+      return base64;
+    }
+
     this.loadStream = function(track_url, successCallback, errorCallback) {
       self.streamUrl = () => track_url;
-      successCallback();
+      jsmediatags.read(track_url, {
+        onError: function(error) {
+          console.log(error);
+          errorCallback();
+        },
+        onSuccess: function(tags) {
+          tags = tags.tags;
+          self.sound.title = tags.title;
+          self.sound.user.username = tags.artist;
+          self.sound.permalink_url = track_url;
+          self.sound.artwork_url = self.parseImage(tags.picture);
+          successCallback();
+        }
+      })
     }
 
     this.directStream = function (direction) {
@@ -683,7 +708,7 @@ window.onload = function init() {
     uiUpdater.toggleControlPanel();
     // on load, check to see if there is a track token in the URL, and if so, load that automatically
     if (window.location.hash) {
-        var trackUrl = 'https://soundcloud.com/' + window.location.hash.substr(1);
+        var trackUrl = window.location.origin + '/' + window.location.hash.substr(1);
         loadAndUpdate(trackUrl);
     }
 
