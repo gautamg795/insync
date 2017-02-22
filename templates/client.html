@@ -84,6 +84,7 @@ var loadAndUpdate;
           } else if (msg.type == "play") {
             if (audio.src != msg.src) {
               loadAndUpdate(msg.src);
+              audio.pause();
               return; // try again later after buffering
             }
             var lag = Math.max(0, (msg.curTime - window.performance.now() -
@@ -95,6 +96,7 @@ var loadAndUpdate;
           } else if (msg.type == "update") {
             if (audio.src != msg.src) {
               loadAndUpdate(msg.src);
+              audio.pause();
               return; // try again later after buffering
             }
             var lag = Math.max(0, (msg.curTime - window.performance.now() -
