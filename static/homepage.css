@@ -5,27 +5,55 @@ body {
 }
 
 #box {
+    position: relative;
     background: white;
-    opacity: 0.7;
+    opacity: 0.8;
     width: 750px;
     height: 400px;
-    top: 50%;
-    left: 50%;
-    margin-left: auto;
-    margin-right: auto;
+    margin: auto;
+    font-family: Helvetica;
     margin-top: 150px;
+    border-radius: 6px;
 }
 
 #title {
-    padding-top: 100px;
-    margin: 50px;
+    padding-top: 80px;
+    margin: 40px;
     text-align: center;
     color: black;
+    font-size:70px;
+    font-style: oblique;
+    font-weight: bold;
+}
+
+button {
+    position: absolute;
+    top: 280px;
+    background-color: #666666;
+    width: 200px;
+    height: 65px;
+    border-radius: 6px;
+    font-size:30px;
+    color: white;
 }
 
 #create_room_button {
-    background-color: #4568DC;
-    width: 300px;
-    height: 75px;
-    color: white;
+    left: 150px;
+}
+
+#join_room_button {
+    right: 150px;
+}
+
+#username_input {
+    border: 2px solid #666666;
+    border-radius: 4px;
+    padding: 3px;
+}
+
+#room_prompt {
+    margin: auto;
+    color: #666666;
+    text-align: center;
+    font-size: 24px;
 }
