@@ -1,4 +1,38 @@
 <!DOCTYPE html>
 <html>
+<head>
+	<title>Soundcloud Visualizer by Michael Bromley</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+</head>
+<body>
+<div id="box">
 
+
+<div id="title">
+
+	<button type="submit" id="create_room_button">Create a room</button><br>
+	
+	Join a room:
+	<form id="form">
+		<input id="username_input" placeholder="Write in a username.">
+		<button type="submit" id="submit">Join!</button><br>
+	</form>
+</div>
+</div>
+<script type="text/javascript">
+	form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var createClient = document.getElementById('username_input').value;
+        console.log(createClient);
+        window.location = window.location.origin + '/' + createClient;
+    });
+
+    document.getElementById("#create_room_button").onclick(function(e) {
+        e.preventDefault();
+        window.location = window.location.origin + '/host';
+    });
+</script>
+</body>
 </html>
