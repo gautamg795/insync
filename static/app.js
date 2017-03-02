@@ -638,10 +638,6 @@ var UiUpdater = function() {
 
         // display the track info panel
         trackInfoPanel.className = '';
-
-        // add a hash to the URL so it can be shared or saved
-        var trackToken = loader.sound.permalink_url.substr(22);
-        window.location = '#' + trackToken;
     };
     this.toggleControlPanel = function() {
         if (controlPanel.className.indexOf('hidden') === 0) {
@@ -706,11 +702,6 @@ window.onload = function init() {
 
 
     uiUpdater.toggleControlPanel();
-    // on load, check to see if there is a track token in the URL, and if so, load that automatically
-    if (window.location.hash) {
-        var trackUrl = window.location.origin + '/' + window.location.hash.substr(1);
-        loadAndUpdate(trackUrl);
-    }
 
     // handle the form submit event to load the new URL
     form.addEventListener('submit', function(e) {
