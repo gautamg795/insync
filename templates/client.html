@@ -101,7 +101,7 @@ var loadAndUpdate;
             }
             var lag = Math.max(0, (msg.curTime - window.performance.now() -
                   delay)/2000);
-            if (Math.abs(audio.currentTime - (msg.time + lag)) > .04) {
+            if (Math.abs(audio.currentTime - (msg.time + lag)) > .10) {
               console.log("updating because behind by: " + 
                   (Math.abs(audio.currentTime - (msg.time + lag))));
               console.log("measured lag: " + lag)
