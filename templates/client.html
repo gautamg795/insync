@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Soundcloud Visualizer by Michael Bromley</title>
+  <title>insync | listening in "{{room}}"</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <div id="info">
-    Audio visualizer: a canvas and webaudio API experiment based off<a href="http://www.michaelbromley.co.uk">Michael Bromley's Soundcloud visualizer</a>.<br>
+    Audio visualizer: a canvas and webaudio API experiment based off <a href="http://www.michaelbromley.co.uk">Michael Bromley's Soundcloud visualizer</a>.<br>
     For more information, visit the project's <a href="https://github.com/michaelbromley/soundcloud-visualizer">Github page</a><br><br>
     <b>Instructions</b><br>
-    Paste the URL of an mp3 into the form and press enter.<br><br>
-    <b>Controls</b><br>
-    <b>space bar</b> - toggle play/pause<br>
-    <b>right/left arrow</b> - skip forward/backwards through playlist<br>
+    Open this page after someone has started hosting. Enjoy.<br><br>
 </div>
 
 <div id="visualizer"></div>
@@ -26,7 +23,7 @@
         <div id="infoTrack"></div>
     </div>
     <div id="playerControls">
-        <form id="form">
+        <form id="form" style="display: none">
             <input id="input" placeholder="Paste MP3 URL here">
             <button type="submit" id="submit"><i class="icon-play"></i></button><br>
         </form>
@@ -39,7 +36,6 @@
 
 <footer>
     <a href="#" id="credit"> <i class="icon-info"></i> About</a>
-    <span id="github"><a href="https://github.com/michaelbromley/soundcloud-visualizer"><i class="icon-github"></i> Source on Github</a></span>
 </footer>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.4.0/jsmediatags.min.js"></script>
 <script src="//connect.soundcloud.com/sdk.js"></script>
