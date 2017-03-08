@@ -66,7 +66,7 @@ var loadAndUpdate;
               resolve(sum / n);
             }
           });
-          setTimeout(() => reject("Delay calculation timed out"), 5000);
+          setTimeout(() => reject("Failed to connect to host, are you sure someone is there?"), 5000);
         });
       }
       getDelay().then(delay => {
